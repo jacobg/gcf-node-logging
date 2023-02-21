@@ -1,4 +1,5 @@
 import functions from '@google-cloud/functions-framework'
+import { Logging } from '@google-cloud/logging'
 
 const functionName = 'gcf-node-logging'
 
@@ -34,24 +35,26 @@ functions.http(functionName, async (req, res) => {
 
   const latencyMs = Date.now() - requestStartMs
 
-  // TODO: How do we set logName for request log to "cloudfunctions.googleapis.com%2Frequest_log" ?
-  console.log(JSON.stringify({
+  const logging = new Logging({ projectId })
+  const requestLog = logging.log('cloudfunctions.googleapis.com%2Frequest_log')
+
+  const logEntry = requestLog.entry({
     severity: 'INFO',
-    message: 'request log message',
+    textPayload: 'request log message',
     timestamp: new Date().toISOString(),
     // It seems GCF automatically adds trace, resource, and labels.
-    // 'logging.googleapis.com/trace': `projects/${projectId}/traces/${trace}`,
-    // resource: {
-    //   type: 'cloud_function',
-    //   labels: {
-    //     function_name: functionName,
-    //     project_id: projectId,
-    //     region
-    //   }
-    // },
-    // labels: {
-    //   execution_id: req.header('Function-Execution-Id')
-    // },
+    trace: `projects/${projectId}/traces/${trace}`,
+    resource: {
+      type: 'cloud_function',
+      labels: {
+        function_name: functionName,
+        project_id: projectId,
+        region
+      }
+    },
+    labels: {
+      execution_id: req.header('Function-Execution-Id')
+    },
     httpRequest: Object.assign(
       {
         requestMethod: req.method,
@@ -66,7 +69,8 @@ functions.http(functionName, async (req, res) => {
       requestSize ? { requestSize } : null,
       responseSize ? { responseSize } : null
     )
-  }))
+  })
+  await requestLog.write(logEntry)
 
   res.sendStatus(200)
   res.end()

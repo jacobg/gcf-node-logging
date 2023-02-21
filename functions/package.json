@@ -1,0 +1,22 @@
+{
+    "name": "gcf-node-logging",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint src/ --ext .js",
+        "deploy": "gcloud functions deploy gcf-node-logging --runtime=nodejs18 --trigger-http --allow-unauthenticated"
+    },
+    "engines": {
+        "node": "18"
+    },
+    "main": "src/index.js",
+    "dependencies": {
+        "@google-cloud/functions-framework": "^3.1.3"
+    },
+    "devDependencies": {
+        "eslint": "^8.34.0",
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-n": "^15.6.1",
+        "eslint-plugin-promise": "^6.1.1"
+    }
+}

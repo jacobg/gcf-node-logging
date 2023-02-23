@@ -62,7 +62,9 @@ functions.http(functionName, async (req, res) => {
         protocol: req.protocol,
         status: res.statusCode,
         userAgent: req.header('user-agent'),
-        latency: `${latencyMs / 1000}s`,
+        latency: {
+          seconds: latencyMs / 1000
+        },
         remoteIp: req.ip,
         referer: req.header('referer')
       },

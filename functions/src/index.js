@@ -17,20 +17,20 @@ functions.http(functionName, async (req, res) => {
 
   // Create a request log.
 
-  const host = req.header('host')
-  const match = /([\w-]+-[\w-]+)-([\w-]+)\.cloudfunctions\.net/.exec(host)
-  const region = match[1]
-  const projectId = match[2]
+  // const host = req.header('host')
+  // const match = /(\w+-\w+)-([\w-]+)\.cloudfunctions\.net/.exec(host)
+  // const region = match[1]
+  // const projectId = match[2]
   const url = `${req.protocol}://${req.hostname}/${functionName}${req.originalUrl}`
 
-  const traceHeader = req.header('X-Cloud-Trace-Context')
-  const [trace] = traceHeader ? traceHeader.split('/') : []
+  // const traceHeader = req.header('X-Cloud-Trace-Context')
+  // const [trace] = traceHeader ? traceHeader.split('/') : []
 
   const requestSize = req.header('content-length')
   // TODO: We don't know the response size until we send it.
   // TOOD: We might need a custom send function to pass in the data so we can calculate its size.
   // TODO: Then after creating this request log, we would actually call the real res.send function.
-  const responseSize = (res.getHeader && Number(res.getHeader('Content-Length'))) || 0
+  // const responseSize = (res.getHeader && Number(res.getHeader('Content-Length'))) || 0
 
   const latencyMs = Date.now() - requestStartMs
 
@@ -38,7 +38,7 @@ functions.http(functionName, async (req, res) => {
   console.log(JSON.stringify({
     severity: 'INFO',
     message: 'request log message',
-    timestamp: new Date().toISOString(),
+    // timestamp: new Date().toISOString(),
     // It seems GCF automatically adds trace, resource, and labels.
     // 'logging.googleapis.com/trace': `projects/${projectId}/traces/${trace}`,
     // resource: {
@@ -59,12 +59,14 @@ functions.http(functionName, async (req, res) => {
         protocol: req.protocol,
         status: res.statusCode,
         userAgent: req.header('user-agent'),
-        latency: `${latencyMs / 1000}s`,
+        latency: {
+          seconds: latencyMs / 1000
+        },
         remoteIp: req.ip,
         referer: req.header('referer')
       },
       requestSize ? { requestSize } : null,
-      responseSize ? { responseSize } : null
+      // responseSize ? { responseSize } : null
     )
   }))
 

@@ -1,9 +1,9 @@
 module.exports = {
   env: {
-    browser: true,
-    es2021: true
+    es2022: true,
+    node: true
   },
-  extends: 'standard',
+  extends: 'eslint:recommended',
   overrides: [
   ],
   parserOptions: {
